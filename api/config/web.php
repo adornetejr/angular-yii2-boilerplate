@@ -1,9 +1,13 @@
 <?php
 
-$params = include __DIR__ . '/params.php';
+$params = include __DIR__.'/params.php';
 
 $config = [
     'id' => 'boilerplate-api',
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm' => '@vendor/npm-asset',
+    ],
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
@@ -55,7 +59,7 @@ $config = [
                 ],
             ],
         ],
-        'db' => include __DIR__ . '/db.php',
+        'db' => include __DIR__.'/db.php',
 
         'urlManager' => [
             'baseUrl' => '/api',    // Added for
