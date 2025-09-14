@@ -1,19 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { SharedService } from '../shared/shared.service';
 import { GlobalService } from './global.service';
 import { ResponseBody } from './response-body';
-import { StaffService } from './staff.service';
 import { User } from './user';
 import { UserList } from './user-list';
 
 @Injectable()
 export class UserDataService {
-  constructor(private globalService: GlobalService, private staffService: StaffService, private http: HttpClient) {}
+  constructor(private globalService: GlobalService, private http: HttpClient) {}
 
   public static getStatusTypes(): any[] {
     return [
@@ -80,7 +79,9 @@ export class UserDataService {
   getAllUsers(extendedQueries?: any): Observable<UserList> {
     const headers = GlobalService.getHeaders();
 
-    let queries = {};
+    let queries = {
+      per_page: 10
+    };
     if (extendedQueries) {
       queries = { ...queries, ...extendedQueries };
     }

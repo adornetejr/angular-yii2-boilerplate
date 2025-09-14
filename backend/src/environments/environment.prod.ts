@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiHost: '//localhost/api/v1',
+  apiHost: '/api/v1',
   tokenName: 'backend-token',
   customDateTimeFormat: {
     apiFormat: 'YYYY-MM-DD HH:mm:ss',

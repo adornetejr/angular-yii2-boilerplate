@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { StaffService } from '../model/staff.service';
 // tslint:disable-next-line: ordered-imports
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
     };
   }
 
-  isValid(field): boolean {
+  isValid(field: string): boolean {
     let isValid: boolean = false;
 
     // If the field is not touched and invalid, it is considered as initial loaded form. Thus set as true
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
     return isValid;
   }
 
-  public onValueChanged(data?: any) {
+  public onValueChanged(_data?: any) {
     if (!this.loginForm) {
       return;
     }
@@ -76,6 +76,10 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     this.resetFormErrors();
     this.staffService.logout();
+  }
+
+  getFormControls(key: string) {
+    return this.loginForm.get(key) as FormControl;
   }
 
   public onSubmit(elementValues: any) {

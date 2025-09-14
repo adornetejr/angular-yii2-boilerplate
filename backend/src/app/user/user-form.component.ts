@@ -7,8 +7,8 @@ import { StaffService } from '../model/staff.service';
 import { User } from '../model/user';
 import { UserDataService } from '../model/user-data.service';
 
-import _ from 'lodash';
-import * as moment from 'moment';
+import forIn from 'lodash-es/forIn';
+import moment from 'moment';
 import { environment } from '../../environments/environment';
 
 @Component({
@@ -17,11 +17,11 @@ import { environment } from '../../environments/environment';
 export class UserFormComponent implements OnInit, OnDestroy {
   mode: string = '';
 
-  id: number;
-  parameters: any;
-  user: User;
+  id: number = 0;
+  parameters: any = {};
+  user: User = new User();
 
-  errorMessage: string;
+  errorMessage: string = '';
 
   form: FormGroup;
   formErrors: any;
@@ -76,7 +76,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
     }
   }
 
-  setFormField(field, value) {
+  setFormField(field: string, value: any) {
     this.form.controls[field].setValue(value);
   }
 
@@ -92,7 +92,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
     };
   }
 
-  isValid(field): boolean {
+  isValid(field: string): boolean {
     let isValid: boolean = false;
 
     // If the field is not touched and invalid, it is considered as initial loaded form. Thus set as true
@@ -106,7 +106,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
     return isValid;
   }
 
-  onValueChanged(data?: any) {
+  onValueChanged(_data?: any) {
     if (!this.form) {
       return;
     }
@@ -226,10 +226,10 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   private setUserToForm() {
-    _.forIn(this.user, (value, key) => {
+    forIn(this.user, (value: any, key: string) => {
       if (typeof this.form.controls[key] !== 'undefined') {
         if (key === 'confirmed_at' || key === 'blocked_at') {
-          if (value === null) {
+          if (value === null || value === '') {
             this.form.controls[key].setValue('');
           } else if (moment.isMoment(value)) {
             this.form.controls[key].setValue(value.format(environment.customDateTimeFormat.apiFormat));
@@ -246,18 +246,18 @@ export class UserFormComponent implements OnInit, OnDestroy {
   }
 
   private setFormToUser() {
-    _.forIn(this.form.getRawValue(), (value, key) => {
-      if (typeof this.user[key] !== 'undefined') {
+    forIn(this.form.getRawValue(), (value: any, key: string) => {
+      if (this.user.hasOwnProperty(key)) {
         if (key === 'confirmed_at' || key === 'blocked_at') {
           if (moment.isMoment(value)) {
-            this.user[key] = value.unix();
+            this.user[key] = String(value.unix());
           } else if (moment(value).isValid()) {
-            this.user[key] = moment(value).unix();
+            this.user[key] = String(moment(value).unix());
           } else {
-            this.user[key] = null;
+            this.user[key] = '';
           }
         } else {
-          this.user[key] = value;
+          (this.user as any)[key] = value;
         }
       }
     });
@@ -268,7 +268,7 @@ function validateDateTime(fieldKeys: any) {
   return (group: FormGroup) => {
     for (const fieldKey of fieldKeys) {
       const field = group.controls[fieldKey];
-      if (typeof field !== 'undefined' && (field.value !== '' && field.value !== null)) {
+      if (typeof field !== 'undefined' && field.value !== '' && field.value !== null) {
         if (moment(field.value, environment.customDateTimeFormat.parseInput, false).isValid() === false) {
           return field.setErrors({ validateDateTime: true });
         }
